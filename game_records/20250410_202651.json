@@ -1,0 +1,234 @@
+{
+    "game_id": "20250410_202651",
+    "player_names": [
+        "log",
+        "tubus"
+    ],
+    "rounds": [
+        {
+            "round_id": 1,
+            "target_card": "A",
+            "round_players": [
+                "log",
+                "tubus"
+            ],
+            "starting_player": "log",
+            "player_initial_states": [
+                {
+                    "player_name": "log",
+                    "bullet_position": 4,
+                    "current_gun_position": 1,
+                    "initial_hand": [
+                        "Joker",
+                        "A",
+                        "K",
+                        "A",
+                        "Q"
+                    ]
+                },
+                {
+                    "player_name": "tubus",
+                    "bullet_position": 3,
+                    "current_gun_position": 0,
+                    "initial_hand": [
+                        "K",
+                        "A",
+                        "K",
+                        "K",
+                        "K"
+                    ]
+                }
+            ],
+            "play_history": [
+                {
+                    "player_name": "log",
+                    "played_cards": [
+                        "K"
+                    ],
+                    "remaining_cards": [
+                        "Joker",
+                        "A",
+                        "A",
+                        "Q"
+                    ],
+                    "next_player": "tubus",
+                    "was_challenged": true,
+                    "challenge_result": true
+                }
+            ],
+            "round_result": {
+                "shooter_name": "log",
+                "bullet_hit": false
+            }
+        },
+        {
+            "round_id": 2,
+            "target_card": "Q",
+            "round_players": [
+                "log",
+                "tubus"
+            ],
+            "starting_player": "log",
+            "player_initial_states": [
+                {
+                    "player_name": "log",
+                    "bullet_position": 4,
+                    "current_gun_position": 2,
+                    "initial_hand": [
+                        "Q",
+                        "A",
+                        "Q",
+                        "A",
+                        "Q"
+                    ]
+                },
+                {
+                    "player_name": "tubus",
+                    "bullet_position": 3,
+                    "current_gun_position": 0,
+                    "initial_hand": [
+                        "K",
+                        "A",
+                        "A",
+                        "K",
+                        "K"
+                    ]
+                }
+            ],
+            "play_history": [
+                {
+                    "player_name": "log",
+                    "played_cards": [
+                        "A"
+                    ],
+                    "remaining_cards": [
+                        "Q",
+                        "Q",
+                        "A",
+                        "Q"
+                    ],
+                    "next_player": "tubus",
+                    "was_challenged": true,
+                    "challenge_result": true
+                }
+            ],
+            "round_result": {
+                "shooter_name": "log",
+                "bullet_hit": false
+            }
+        },
+        {
+            "round_id": 3,
+            "target_card": "A",
+            "round_players": [
+                "log",
+                "tubus"
+            ],
+            "starting_player": "log",
+            "player_initial_states": [
+                {
+                    "player_name": "log",
+                    "bullet_position": 4,
+                    "current_gun_position": 3,
+                    "initial_hand": [
+                        "A",
+                        "K",
+                        "Q",
+                        "Q",
+                        "A"
+                    ]
+                },
+                {
+                    "player_name": "tubus",
+                    "bullet_position": 3,
+                    "current_gun_position": 0,
+                    "initial_hand": [
+                        "Q",
+                        "K",
+                        "Joker",
+                        "K",
+                        "Q"
+                    ]
+                }
+            ],
+            "play_history": [
+                {
+                    "player_name": "log",
+                    "played_cards": [
+                        "K"
+                    ],
+                    "remaining_cards": [
+                        "A",
+                        "Q",
+                        "Q",
+                        "A"
+                    ],
+                    "next_player": "tubus",
+                    "was_challenged": true,
+                    "challenge_result": true
+                }
+            ],
+            "round_result": {
+                "shooter_name": "log",
+                "bullet_hit": false
+            }
+        },
+        {
+            "round_id": 4,
+            "target_card": "Q",
+            "round_players": [
+                "log",
+                "tubus"
+            ],
+            "starting_player": "log",
+            "player_initial_states": [
+                {
+                    "player_name": "log",
+                    "bullet_position": 4,
+                    "current_gun_position": 4,
+                    "initial_hand": [
+                        "A",
+                        "Q",
+                        "A",
+                        "Q",
+                        "Joker"
+                    ]
+                },
+                {
+                    "player_name": "tubus",
+                    "bullet_position": 3,
+                    "current_gun_position": 0,
+                    "initial_hand": [
+                        "Q",
+                        "A",
+                        "Q",
+                        "K",
+                        "A"
+                    ]
+                }
+            ],
+            "play_history": [
+                {
+                    "player_name": "log",
+                    "played_cards": [
+                        "A"
+                    ],
+                    "remaining_cards": [
+                        "Q",
+                        "A",
+                        "Q",
+                        "Joker"
+                    ],
+                    "next_player": "tubus",
+                    "was_challenged": true,
+                    "challenge_result": true
+                }
+            ],
+            "round_result": {
+                "shooter_name": "log",
+                "bullet_hit": true
+            }
+        }
+    ],
+    "winner": "tubus"
+}

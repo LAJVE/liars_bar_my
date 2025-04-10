@@ -101,6 +101,31 @@ class Game:
         self.target_card = random.choice(['Q', 'K', 'A'])
         print(f"目标牌是: {self.target_card}")
 
+    def start_round_record(self) -> None:
+        """开始新的回合，并在 `GameRecord` 里记录信息"""
+        self.round_count += 1
+        starting_player = self.players[self.current_player_idx].name
+        player_initial_states = [
+            PlayerInitialState(
+                player_name=player.name,
+                bullet_position=player.bullet_position,
+                current_gun_position=player.current_bullet_position,
+                initial_hand=player.hand.copy()
+            ) 
+            for player in self.players if player.alive
+        ]
+
+        # 获取当前存活的玩家
+        round_players = [player.name for player in self.players if player.alive]
+
+        self.game_record.start_round(
+            round_id=self.round_count,
+            target_card=self.target_card,
+            round_players=round_players,
+            starting_player=starting_player,
+            player_initial_states=player_initial_states,
+        )
+
     def is_valid_play(self, cards: List[str]) -> bool:
         """
         判断出牌是否符合目标牌规则：
@@ -125,9 +150,16 @@ class Game:
             player: 需要执行惩罚的玩家
         """        
         # 执行射击并获取存活状态
-        player.process_penalty()
+        still_alive = player.process_penalty()
         self.last_shooter_name = player.name        
         # 检查胜利条件
+
+        # 记录射击结果
+        self.game_record.record_shooting(
+            shooter_name=player.name,
+            bullet_hit=not still_alive  # 如果玩家死亡，说明子弹命中
+        )
+
         if not self.check_victory():
             self.reset_round(record_shooter=True)
 
@@ -154,6 +186,7 @@ class Game:
             alive_players = [p for p in self.players if p.alive]
             self.current_player_idx = self.players.index(random.choice(alive_players))
 
+        self.start_round_record()
         print(f"从 {self.players[self.current_player_idx].name} 开始新的一轮！")
 
     def check_victory(self) -> bool:
@@ -167,6 +200,8 @@ class Game:
         if len(alive_players) == 1:
             winner = alive_players[0]
             print(f"\n{winner.name} 获胜！")
+            # 记录胜利者并保存游戏记录
+            self.game_record.finish_game(winner.name)
             self.game_over = True
             return True
         return False
@@ -217,6 +252,14 @@ class Game:
         input('请输入随机字符以开始下一个环节. 输入之后当前屏幕内容会清空, 之后请将屏幕出示给所有玩家.')
         self.clear_screen()
 
+        # 记录出牌行为
+        self.game_record.record_play(
+            player_name=current_player.name,
+            played_cards=play_result.copy(),
+            remaining_cards=current_player.hand.copy(),
+            next_player=next_player.name,
+        )
+
         return play_result
     
     def handle_challenge(self, current_player: Player, next_player: Player, played_cards: List[str]) -> Player:
@@ -248,11 +291,21 @@ class Game:
         if challenge_result:
             # 验证出牌是否合法
             is_valid = self.is_valid_play(played_cards)
-            
+
+            # 记录质疑结果
+            self.game_record.record_challenge(
+                was_challenged=True,
+                result=not is_valid,  # 质疑成功意味着出牌不合法
+            )
+
             # 根据验证结果返回需要受罚的玩家
             return next_player if is_valid else current_player
         else:
             # 记录未质疑的情况
+            self.game_record.record_challenge(
+                was_challenged=False,
+                result=None,
+            )            
             return None
 
     def handle_system_challenge(self, current_player: Player) -> None:
@@ -268,13 +321,31 @@ class Game:
         # 记录玩家自动出牌
         all_cards = current_player.hand.copy()  # 复制当前手牌以供记录
         current_player.hand.clear()  # 清空手牌
-        
+
+        # 记录出牌行为
+        self.game_record.record_play(
+            player_name=current_player.name,
+            played_cards=all_cards,
+            remaining_cards=[],  # 剩余手牌为空列表
+            next_player="无",
+        )
+
         # 验证出牌是否合法
         is_valid = self.is_valid_play(all_cards)
-        
+
+        # 记录系统质疑
+        self.game_record.record_challenge(
+            was_challenged=True,
+            result=not is_valid,  # 质疑成功意味着出牌不合法
+        )
+
         if is_valid:
             print(f"系统质疑失败！{current_player.name} 的手牌符合规则。随机选取当前存活玩家开始下一轮。")
             # 记录一个特殊的射击结果（无人射击）
+            self.game_record.record_shooting(
+                shooter_name="无",
+                bullet_hit=False
+            )
             self.reset_round(record_shooter=False)
         else:
             print(f"系统质疑成功！{current_player.name} 的手牌违规，将执行射击惩罚。")
@@ -317,6 +388,7 @@ class Game:
         """启动游戏主循环"""
         self.deal_cards()
         self.choose_target_card()
+        self.start_round_record()
         while not self.game_over:
             self.play_round()
 
