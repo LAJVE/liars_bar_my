@@ -152,7 +152,6 @@ class Game:
         # 执行射击并获取存活状态
         still_alive = player.process_penalty()
         self.last_shooter_name = player.name        
-        # 检查胜利条件
 
         # 记录射击结果
         self.game_record.record_shooting(
@@ -160,6 +159,40 @@ class Game:
             bullet_hit=not still_alive  # 如果玩家死亡，说明子弹命中
         )
 
+        round_record = self.game_record.get_current_round().to_dict()
+        # 输出本轮总结
+        print('-' * 50)
+        print("本轮总结:")
+        print("本轮初始手牌为: ")
+        for player_state in round_record['player_initial_states']:
+            player_name = player_state['player_name']
+            initial_hand = ", ".join(player_state['initial_hand'])  
+            print(f"{player_name}：{initial_hand}")
+        print("本轮出牌情况为:")
+        for action in round_record['play_history']:
+            print(f"{action['player_name']} 出牌：{'、'.join(action['played_cards'])}，剩余手牌：{'、'.join(action['remaining_cards'])} (目标牌：{round_record['target_card']})")
+
+            # 不论是否质疑，都显示质疑原因，将理由放在下一行
+            if action['was_challenged']:
+                print(f"{action['next_player']} 选择质疑")
+            else:
+                print(f"{action['next_player']} 选择不质疑")
+
+            # 质疑过程
+            if action['was_challenged']:
+                if action['challenge_result']:
+                    print(f"质疑成功，{action['player_name']} 被揭穿。")
+                else:
+                    print(f"质疑失败，{action['next_player']} 被惩罚。")
+        # 记录射击结果
+        if round_record['round_result']:
+            result = round_record['round_result']
+            if result["bullet_hit"]:
+                print(f"子弹命中，{result['shooter_name']} 死亡。")
+            else:
+                print(f"子弹未击中，{result['shooter_name']} 幸免于难。")
+
+        # 检查胜利条件
         if not self.check_victory():
             self.reset_round(record_shooter=True)
 
@@ -226,7 +259,7 @@ class Game:
         """
         check_player = ''
         while check_player != current_player.name:
-            check_player = input(f"请 {current_player.name} 输入自己的姓名以确认身份, 请确保其它玩家无法看到屏幕.")
+            check_player = input(f"轮到 {current_player.name} 出牌, 请 {current_player.name} 输入自己的姓名以确认身份, 请确保其它玩家无法看到屏幕.")
 
         # 清空屏幕
         self.clear_screen()
@@ -236,7 +269,7 @@ class Game:
         # 让当前玩家选择出牌
         valid_play = False
         while not valid_play:
-            play_result = input(f"{current_player.name} 的当前手牌为 {current_player.hand}, 目标牌是 {self.target_card}. 请输入你的的出牌(Q, K, A, Joker), 各个牌之间用一个空格分开:").split()
+            play_result = input(f"{current_player.name} 的当前手牌为 {current_player.hand}, 目标牌是 {self.target_card}. 请 {current_player.name} 选择出牌结果(Q, K, A, Joker), 各个牌之间用一个空格分开:").split()
             if len(play_result) not in [1,2,3]:
                 print("你的出牌数量不正确. 你应该出1-3张手牌.请重新输入你的出牌.")
             else:
@@ -276,7 +309,7 @@ class Game:
         """
         check_player = ''
         while check_player != next_player.name:
-            check_player = input(f"请 {next_player.name} 输入自己的姓名以确认身份, 请确保其它玩家无法看到屏幕.")
+            check_player = input(f"轮到 {next_player.name} 质疑, 请 {next_player.name} 输入自己的姓名以确认身份, 请确保其它玩家无法看到屏幕.")
         # 清空屏幕
         self.clear_screen()
 
@@ -285,7 +318,7 @@ class Game:
         # 让下一位玩家决定是否质疑
         print(f"{current_player.name} 声称自己出了 {len(played_cards)} 张目标牌 {self.target_card}.")
         print(f"{next_player.name} 的当前手牌为 {next_player.hand}")
-        challenge_result = input(f"请 {next_player.name} 选择是否质疑. 输入 y 表示质疑, 输入其它表示不质疑.") == 'y'
+        challenge_result = input(f"请 {next_player.name} 选择是否质疑. 输入 y 表示质疑, 输入其它表示不质疑.输入结果后, 请将屏幕出示给所有玩家") == 'y'
 
         # 如果选择质疑
         if challenge_result:
@@ -380,7 +413,8 @@ class Game:
                 self.perform_penalty(player_to_penalize)
                 return
             else:
-                print(f"{next_player.name} 选择不质疑，游戏继续。")                        
+                print(f"{next_player.name} 选择不质疑，游戏继续。")          
+                self.clear_screen()              
                 # 切换至下一玩家
                 self.current_player_idx = next_idx
 
@@ -393,7 +427,7 @@ class Game:
             self.play_round()
 
 if __name__ == '__main__':
-    players = ['log', 'tubus']
+    players = ['player1', 'player2']
 
     print("游戏开始！玩家如下：")
     for name in players:
