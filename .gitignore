@@ -1,0 +1,7 @@
+# 保存结果的文件
+game_records/
+converted_game_records/
+
+
+# python 文件
+__pycache__/
